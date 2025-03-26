@@ -3,12 +3,12 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class Customer(BaseModel):
-    name: str
-    email: str
-    address: str
-    city: str
-    country: str
-    zip_code: str
+    name: Optional[str] = "Unknown Customer"
+    email: Optional[str] = ""
+    address: Optional[str] = ""
+    city: Optional[str] = ""
+    country: Optional[str] = ""
+    zip_code: Optional[str] = ""
 
 class OrderItem(BaseModel):
     product_name: str

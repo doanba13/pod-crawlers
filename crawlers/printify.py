@@ -30,50 +30,65 @@ class PrintifyCrawler(BaseCrawler):
 
         standardized_orders = []
         for order in data.get("data", []):
-            standardized_order = self._convert_to_standardized(order)
-            standardized_orders.append(standardized_order)
+            try:
+                standardized_order = self._convert_to_standardized(order)
+                standardized_orders.append(standardized_order)
+            except Exception as e:
+                print(f"Error processing order {order.get('id')}: {str(e)}")
+                continue
 
         return standardized_orders
 
     def _convert_to_standardized(self, order: dict) -> StandardizedOrder:
-        # Extract customer information
+        # Extract customer information with fallbacks for missing fields
+        shipping = order.get('shipping', {})
         customer = Customer(
-            name=f"{order['shipping']['first_name']} {order['shipping']['last_name']}",
-            email=order['email'],
-            address=order['shipping']['address1'],
-            city=order['shipping']['city'],
-            country=order['shipping']['country'],
-            zip_code=order['shipping']['zip']
+            name=f"{shipping.get('first_name', '')} {shipping.get('last_name', '')}".strip(),
+            email=order.get('email', ''),
+            address=shipping.get('address1', ''),
+            city=shipping.get('city', ''),
+            country=shipping.get('country', ''),
+            zip_code=shipping.get('zip', '')
         )
 
-        # Extract order items
+        # Extract order items with fallbacks
         items = []
-        for item in order['line_items']:
+        for item in order.get('line_items', []):
             order_item = OrderItem(
-                product_name=item['title'],
-                quantity=item['quantity'],
-                price=float(item['price']),
+                product_name=item.get('title', 'Unknown Product'),
+                quantity=item.get('quantity', 1),
+                price=float(item.get('price', 0)),
                 variant=item.get('variant_title'),
                 size=item.get('size'),
                 color=item.get('color')
             )
             items.append(order_item)
 
-        # Calculate costs
-        subtotal = float(order['subtotal'])
-        shipping_cost = float(order['shipping_cost'])
-        total_cost = float(order['total_price'])
+        # Calculate costs with fallbacks
+        subtotal = float(order.get('subtotal', 0))
+        shipping_cost = float(order.get('shipping_cost', 0))
+        total_cost = float(order.get('total_price', subtotal + shipping_cost))
+
+        # Convert created_at to datetime with fallback
+        created_at = order.get('created_at')
+        if created_at:
+            try:
+                order_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            except (ValueError, AttributeError):
+                order_date = datetime.now()
+        else:
+            order_date = datetime.now()
 
         return StandardizedOrder(
             platform="printify",
-            order_id=str(order['id']),
-            order_date=datetime.fromisoformat(order['created_at'].replace('Z', '+00:00')),
+            order_id=str(order.get('id', '')),
+            order_date=order_date,
             customer=customer,
             items=items,
             subtotal=subtotal,
             shipping_cost=shipping_cost,
             total_cost=total_cost,
-            status=order['status'],
+            status=order.get('status', 'unknown'),
             tracking_number=order.get('tracking_number'),
             raw_data=order
         ) 

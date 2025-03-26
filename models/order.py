@@ -27,6 +27,7 @@ class StandardizedOrder(BaseModel):
     subtotal: float
     shipping_cost: float
     total_cost: float
+    final_price: Optional[float] = None  # Total price including shipping and taxes
     status: str
     tracking_number: Optional[str] = None
     raw_data: dict  # Store the original response data 

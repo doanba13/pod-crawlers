@@ -121,3 +121,4 @@ Each JSON file contains an array of standardized order objects with the followin
 - The script runs daily at 1 AM by default
 - Orders are saved in JSON format for easy processing and analysis
 - The original raw data from each platform is preserved in the `raw_data` field
+- "final_price" -> price that POD platform charge us 😡

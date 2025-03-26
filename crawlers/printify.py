@@ -171,6 +171,13 @@ class PrintifyCrawler(BaseCrawler):
         shipping_cost_cents = order.get('total_shipping', 0)
         shipping_cost = float(shipping_cost_cents) / 100.0 if shipping_cost_cents else 0
 
+        tax_cents = order.get('total_tax', 0)
+        tax = float(tax_cents) / 100.0 if tax_cents else 0
+        
+        # Calculate final price (total_price + total_shipping + total_tax)
+        final_price = total_price + shipping_cost + tax
+        logger.debug(f"Order {order_id}: final_price calculation: {total_price} + {shipping_cost} + {tax} = {final_price}")
+
         # Convert created_at to datetime with fallback
         created_at = order.get('created_at')
         if created_at:
@@ -182,7 +189,8 @@ class PrintifyCrawler(BaseCrawler):
         else:
             order_date = datetime.now()
 
-        return StandardizedOrder(
+        # Create standardized order with all fields
+        standardized_order = StandardizedOrder(
             platform="printify",
             order_id=str(order_id),
             order_date=order_date,
@@ -191,7 +199,10 @@ class PrintifyCrawler(BaseCrawler):
             subtotal=subtotal,
             shipping_cost=shipping_cost,
             total_cost=total_price,
+            final_price=final_price,
             status=order.get('status', 'unknown'),
             tracking_number=order.get('tracking_number'),
             raw_data=order
-        ) 
+        )
+        
+        return standardized_order 

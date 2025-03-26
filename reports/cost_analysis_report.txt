@@ -1,0 +1,35 @@
+========================================
+          COST ANALYSIS REPORT          
+========================================
+
+OVERALL SUMMARY
+--------------
+Total Days Analyzed: 52
+Total Cost: $4646.75
+Average Daily Cost: $89.36
+Highest Daily Cost: $583.26 on 2025-03-24
+Lowest Daily Cost: $0.00 on 2025-01-10
+
+PLATFORM BREAKDOWN
+-----------------
+Printful Total: $2238.19 (48.2%)
+Printful Average Daily: $43.04
+
+Printify Total: $1764.03 (38.0%)
+Printify Average Daily: $33.92
+
+Burger Prints Total: $644.53 (13.9%)
+Burger Prints Average Daily: $12.39
+
+RECENT TRENDS
+-------------
+Last 7 Days Total: $1396.89
+Last 7 Days Average: $199.56
+
+TOP 5 HIGHEST COST DAYS
+----------------------
+2025-03-24: $583.26 (Printful: $439.15, Printify: $144.11, Burger: $0.00)
+2025-03-17: $422.53 (Printful: $375.25, Printify: $47.28, Burger: $0.00)
+2025-03-19: $385.39 (Printful: $366.27, Printify: $19.12, Burger: $0.00)
+2025-03-11: $346.83 (Printful: $217.70, Printify: $129.13, Burger: $0.00)
+2025-03-21: $291.73 (Printful: $250.51, Printify: $41.22, Burger: $0.00)

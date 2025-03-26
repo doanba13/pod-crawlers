@@ -116,8 +116,13 @@ class BurgerPrintsCrawler(BaseCrawler):
 
         # Extract order items
         items = []
+        items_amount_total = 0.0
         for item in order.get('items', []):
             product_name = f"{item.get('base_short_code', '')} - {item.get('size_name', '')}"
+            # Get item amount (final price for this item)
+            item_amount = float(item.get('amount', 0))
+            items_amount_total += item_amount
+            
             order_item = OrderItem(
                 product_name=product_name if product_name.strip() else 'Unknown Product',
                 quantity=int(item.get('quantity', 1)),
@@ -135,6 +140,10 @@ class BurgerPrintsCrawler(BaseCrawler):
         subtotal = float(order.get('sub_amount', 0))
         shipping_cost = float(order.get('shipping_fee', 0))
         total_cost = float(order.get('amount', subtotal + shipping_cost))
+        
+        # Use the total amount from items as the final price
+        final_price = items_amount_total
+        logger.debug(f"Order {order_id}: final_price from items.amount total: {final_price}")
 
         # Convert created_date to datetime
         order_date = self._parse_order_date(order) or datetime.now()
@@ -145,7 +154,8 @@ class BurgerPrintsCrawler(BaseCrawler):
         if trackings and isinstance(trackings, list) and len(trackings) > 0:
             tracking_number = trackings[0].get('code')
 
-        return StandardizedOrder(
+        # Create standardized order
+        standardized_order = StandardizedOrder(
             platform="burger_prints",
             order_id=str(order_id),
             order_date=order_date,
@@ -154,7 +164,10 @@ class BurgerPrintsCrawler(BaseCrawler):
             subtotal=subtotal,
             shipping_cost=shipping_cost,
             total_cost=total_cost,
+            final_price=final_price,
             status=order.get('status', 'unknown'),
             tracking_number=tracking_number,
             raw_data=order
-        ) 
+        )
+        
+        return standardized_order 
